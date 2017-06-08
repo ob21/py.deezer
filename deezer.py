@@ -24,6 +24,25 @@ proxy = {"http": "http://p-goodway.rd.francetelecom.fr:3128", "https": "http://p
 new = 2
 # webbrowser.open(auth_url, new=new)
 
+def YtdlHook(d):
+    if d['status'] == 'finished':
+        file_tuple = os.path.split(os.path.abspath(d['filename']))
+        print("Done downloading {}".format(file_tuple[1]))
+        logging.info("Done downloading {}".format(file_tuple[1]))
+    if d['status'] == 'downloading':
+        print(d['filename'], d['_percent_str'], d['_eta_str'])
+
+class YtdlLogger(object):
+    def debug(self, msg):
+        pass
+
+    def warning(self, msg):
+        pass
+
+    def error(self, msg):
+        print(msg)
+        logging.error(msg)
+
 ### download mp3 from youtube url
 def downloadMp3(yt_url, folder):
     print("*** download mp3 " + yt_url)
@@ -40,7 +59,10 @@ def downloadMp3(yt_url, folder):
         'restrictfilenames': True,
         'prefer_ffmpeg': True,
         'ffmpeg_location': 'C:\\ffmpeg',
-        'outtmpl': folder+'\\%(title)s.%(ext)s'}
+        'outtmpl': folder+'\\%(title)s.%(ext)s',
+        'logger': YtdlLogger(),
+        'progress_hooks': [YtdlHook],
+    }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([yt_url])
