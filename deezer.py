@@ -7,23 +7,43 @@ import youtube_dl
 import os
 import sys
 import logging
+from optparse import OptionParser
 
-logging.basicConfig(filename='deezer.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
-
+logging.basicConfig(filename='deezer.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s', filemode='w')
 logging.info('Deezer.py logs')
 
+parser = OptionParser()
+parser.add_option("-c", "--account", dest="account_id",
+                  help="deezer account id", metavar="DEEZER_ACCOUNT_ID")
+parser.add_option("-o", "--output", dest="output_dir",
+                  help="output dir", metavar="OUTPUT_DIR")
+parser.add_option("-v", "--verbose",
+                  action="store_true", dest="verbose", default=False,
+                  help="print status messages to stdout")
+(options, args) = parser.parse_args()
+
+print("account id = " + str(options.account_id))
+print("output dir = " + str(options.output_dir))
+
+if str(options.account_id) == "":
+    # user_id = "5912706"
+    user_id = "0"
+else:
+    user_id = str(options.account_id)
+if str(options.output_dir) == "":
+    dir = "."
+else:
+    dir = str(options.output_dir)
+
+base_url = "http://api.deezer.com"
+proxy = {"http": "http://p-goodway.rd.francetelecom.fr:3128", "https": "http://p-goodway.rd.francetelecom.fr:3128"}
 session = requests.Session()
 session.trust_env = False
 
-user_id="5912706"
-
-base_url = "http://api.deezer.com"
-
-proxy = {"http": "http://p-goodway.rd.francetelecom.fr:3128", "https": "http://p-goodway.rd.francetelecom.fr:3128"}
-
-new = 2
+# new = 2
 # webbrowser.open(auth_url, new=new)
 
+### hook and logger for youtube_dl
 def YtdlHook(d):
     if d['status'] == 'finished':
         file_tuple = os.path.split(os.path.abspath(d['filename']))
@@ -45,8 +65,8 @@ class YtdlLogger(object):
 
 ### download mp3 from youtube url
 def downloadMp3(yt_url, folder):
-    print("*** download mp3 " + yt_url)
-    logging.info("*** download mp3 " + yt_url)
+    print("*** download mp3 " + yt_url + " for playlist '" + folder + "'")
+    logging.info("*** download mp3 " + yt_url + " for playlist " + folder)
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -59,7 +79,7 @@ def downloadMp3(yt_url, folder):
         'restrictfilenames': True,
         'prefer_ffmpeg': True,
         'ffmpeg_location': 'C:\\ffmpeg',
-        'outtmpl': folder+'\\%(title)s.%(ext)s',
+        'outtmpl': dir+'\\'+folder+'\\%(title)s.%(ext)s',
         'logger': YtdlLogger(),
         'progress_hooks': [YtdlHook],
     }
