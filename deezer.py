@@ -22,9 +22,9 @@ new = 2
 ### download mp3 from youtube url
 def downloadMp3(yt_url, folder):
     print("*** download mp3 " + yt_url)
-    sys.path.append("C:\\ffmpeg")
-    print(os.getenv('PATH'))
-    print(sys.path)
+    # sys.path.append("C:\\ffmpeg")
+    # print(os.getenv('PATH'))
+    # print(sys.path)
 
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -34,7 +34,7 @@ def downloadMp3(yt_url, folder):
             'preferredquality': '192',
         }],
         'quiet': True,
-        'verbose': True,
+        'verbose': False,
         'restrictfilenames': True,
         'prefer_ffmpeg': True,
         'ffmpeg_location': 'C:\\ffmpeg',
@@ -49,7 +49,7 @@ def searchOnYoutube(title, author, folder):
     print("*** get on youtube " + youtube_url + title + " " + author)
     r = session.get(youtube_url + title + " " + author, proxies=proxy)
     # r = session.get(youtube_url + title + " " + author)
-    soup = BeautifulSoup(r.text)
+    soup = BeautifulSoup(r.text, "html.parser")
     # print("response = " + r.text)
     v = 0
     for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
@@ -57,7 +57,7 @@ def searchOnYoutube(title, author, folder):
             yt_url = 'https://www.youtube.com' + vid['href']
             downloadMp3(yt_url, folder)
             # webbrowser.open(yt_url, new=new)
-        print('https://www.youtube.com' + vid['href'])
+        # print('https://www.youtube.com' + vid['href'])
         v = v + 1
 
 ### get playlist songs
@@ -75,7 +75,7 @@ def getPlaylistSongs(playlist_id, playlist_name):
         title = playlist['tracks']['data'][i]['title']
         print("--- song : " + title)
         author = playlist['tracks']['data'][i]['artist']['name']
-        print(author)
+        # print(author)
         searchOnYoutube(title, author, playlist_name)
 
 ### ask user playlists (me=5912706)
