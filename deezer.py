@@ -6,6 +6,11 @@ from bs4 import BeautifulSoup
 import youtube_dl
 import os
 import sys
+import logging
+
+logging.basicConfig(filename='deezer.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(message)s')
+
+logging.info('Deezer.py logs')
 
 session = requests.Session()
 session.trust_env = False
@@ -22,10 +27,7 @@ new = 2
 ### download mp3 from youtube url
 def downloadMp3(yt_url, folder):
     print("*** download mp3 " + yt_url)
-    # sys.path.append("C:\\ffmpeg")
-    # print(os.getenv('PATH'))
-    # print(sys.path)
-
+    logging.info("*** download mp3 " + yt_url)
     ydl_opts = {
         'format': 'bestaudio/best',
         'postprocessors': [{
@@ -46,7 +48,8 @@ def downloadMp3(yt_url, folder):
 ### search on youtube
 def searchOnYoutube(title, author, folder):
     youtube_url = "https://www.youtube.com/results?search_query="
-    print("*** get on youtube " + youtube_url + title + " " + author)
+    print("*** search on youtube " + youtube_url + title + " " + author)
+    logging.info("*** search on youtube " + youtube_url + title + " " + author)
     r = session.get(youtube_url + title + " " + author, proxies=proxy)
     # r = session.get(youtube_url + title + " " + author)
     soup = BeautifulSoup(r.text, "html.parser")
@@ -64,10 +67,11 @@ def searchOnYoutube(title, author, folder):
 def getPlaylistSongs(playlist_id, playlist_name):
     id = str(playlist_id)
     playlist_url = base_url + "/playlist/" + id
-    print("*** get songs for playlist " + id + " playlist : " + playlist_url)
+    print("*** get songs for playlist " + id)
+    logging.info("*** get songs for playlist " + id)
     r = session.get(playlist_url, proxies=proxy)
     # r = session.get(playlist_url)
-    print("response = " + r.text)
+    # print("response = " + r.text)
     playlist = json.loads(r.text)
     i = 1
     for i in range(0, len(playlist['tracks']['data'])):
@@ -81,10 +85,11 @@ def getPlaylistSongs(playlist_id, playlist_name):
 ### ask user playlists (me=5912706)
 def askUserPlaylist(user_id):
     user_playlists_url = base_url + "/user/" + user_id + "/playlists/"
-    print("*** get playlist for user " + user_id + " playlists : "+user_playlists_url)
+    print("*** ask playlist for user " + user_id)
+    logging.info("*** ask playlist for user " + user_id)
     r = session.get(user_playlists_url, proxies=proxy)
     # r = session.get(user_playlists_url)
-    print("response = " + r.text)
+    # print("response = " + r.text)
     playlists = json.loads(r.text)
     # print(playlists['data'][0]['id'])
     for i in range(0, len(playlists['data'])):
