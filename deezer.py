@@ -25,14 +25,11 @@ parser.add_option("-v", "--verbose",
 print("account id = " + str(options.account_id))
 print("output dir = " + str(options.output_dir))
 
-if str(options.account_id) == "":
-    user_id = "5912706"
-    # user_id = "0"
-else:
+user_id = "5912706"
+dir = "download"
+if options.account_id is not None:
     user_id = str(options.account_id)
-if str(options.output_dir) == "":
-    dir = "download"
-else:
+if options.output_dir is not None:
     dir = str(options.output_dir)
 
 base_url = "http://api.deezer.com"
@@ -41,6 +38,9 @@ session = requests.Session()
 session.trust_env = False
 
 nb_playlists = 0
+
+print("Deezer user id is" + user_id)
+logging.info("Deezer user id is" + user_id)
 
 # new = 2
 # webbrowser.open(auth_url, new=new)
@@ -136,15 +136,15 @@ def askUserPlaylist(user_id):
     # r = session.get(user_playlists_url)
     # print("response = " + r.text)
     playlists = json.loads(r.text)
-    # print(playlists['data'][0]['id'])
+    print(playlists['data'][0]['id'])
     nb_playlists = len(playlists['data'])
-    print("Number of playlists = " + nb_playlists)
-    logging.info("Number of playlists = " + nb_playlists)
+    print("Number of playlists = " + str(nb_playlists))
+    logging.info("Number of playlists = " + str(nb_playlists))
     for i in range(0, len(playlists['data'])):
         playlist_id = playlists['data'][i]['id']
         print("+++ playlist : " + str(playlist_id))
-        print("-------------- Getting songs for playlist nb " + i + "/" + nb_playlists)
-        logging.info("-------------- Getting songs for playlist nb " + i + "/" + nb_playlists)
+        print("-------------- Getting songs for playlist nb " + str(i+1) + "/" + str(nb_playlists))
+        logging.info("-------------- Getting songs for playlist nb " + str(i+1) + "/" + str(nb_playlists))
         getPlaylistSongs(playlist_id, playlists['data'][i]['title'])
 
 askUserPlaylist(user_id)
