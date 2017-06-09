@@ -25,8 +25,8 @@ parser.add_option("-v", "--verbose",
 print("account id = " + str(options.account_id))
 print("output dir = " + str(options.output_dir))
 
-# user_id = "5912706"
 user_id = "1"
+# user_id = "5912706"
 dir = "downloads"
 if options.account_id is not None:
     user_id = str(options.account_id)
