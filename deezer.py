@@ -25,8 +25,9 @@ parser.add_option("-v", "--verbose",
 print("account id = " + str(options.account_id))
 print("output dir = " + str(options.output_dir))
 
-user_id = "5912706"
-dir = "download"
+# user_id = "5912706"
+user_id = "1"
+dir = "downloads"
 if options.account_id is not None:
     user_id = str(options.account_id)
 if options.output_dir is not None:
@@ -117,11 +118,11 @@ def getPlaylistSongs(playlist_id, playlist_name):
     # r = session.get(playlist_url)
     # print("response = " + r.text)
     playlist = json.loads(r.text)
-    i = 1
-    for i in range(0, len(playlist['tracks']['data'])):
+    n = len(playlist['tracks']['data'])
+    for i in range(0, n):
         # print(playlist['tracks']['data'][i])
         title = playlist['tracks']['data'][i]['title']
-        print("--- song : " + title)
+        print("------ song " + str(i+1) + "/" + str(n) + " : " + title)
         author = playlist['tracks']['data'][i]['artist']['name']
         # print(author)
         searchOnYoutube(title, author, playlist_name)
@@ -143,9 +144,10 @@ def askUserPlaylist(user_id):
     for i in range(0, len(playlists['data'])):
         playlist_id = playlists['data'][i]['id']
         print("+++ playlist : " + str(playlist_id))
-        print("-------------- Getting songs for playlist nb " + str(i+1) + "/" + str(nb_playlists))
-        logging.info("-------------- Getting songs for playlist nb " + str(i+1) + "/" + str(nb_playlists))
-        getPlaylistSongs(playlist_id, playlists['data'][i]['title'])
+        playlist_name = playlists['data'][i]['title']
+        print("-------------- Getting songs for playlist '" + playlist_name + "' " + str(i+1) + "/" + str(nb_playlists))
+        logging.info("-------------- Getting songs for playlist '" + playlist_name + "' " + str(i+1) + "/" + str(nb_playlists))
+        getPlaylistSongs(playlist_id, playlist_name)
 
 askUserPlaylist(user_id)
 
