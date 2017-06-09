@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 import requests
 import json
-import webbrowser
+# import webbrowser
 from bs4 import BeautifulSoup
 import youtube_dl
 import os
-import sys
+# import sys
 import logging
 from optparse import OptionParser
 
@@ -39,8 +39,8 @@ session.trust_env = False
 
 nb_playlists = 0
 
-print("Deezer user id is" + user_id)
-logging.info("Deezer user id is" + user_id)
+print("Deezer user id is " + user_id)
+logging.info("Deezer user id is " + user_id)
 
 # new = 2
 # webbrowser.open(auth_url, new=new)
