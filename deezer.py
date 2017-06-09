@@ -85,6 +85,7 @@ def downloadMp3(yt_url, folder):
         'outtmpl': dir+'\\'+folder+'\\%(title)s.%(ext)s',
         'logger': YtdlLogger(),
         'progress_hooks': [YtdlHook],
+        'ignoreerrors': True,
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
