@@ -124,6 +124,7 @@ def getPlaylistSongs(playlist_id, playlist_name):
         # print(playlist['tracks']['data'][i])
         title = playlist['tracks']['data'][i]['title']
         print("------ song " + str(i+1) + "/" + str(n) + " : " + title)
+        logging.info("------ song " + str(i+1) + "/" + str(n) + " : " + title)
         author = playlist['tracks']['data'][i]['artist']['name']
         # print(author)
         searchOnYoutube(title, author, playlist_name)
