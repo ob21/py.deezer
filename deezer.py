@@ -150,7 +150,7 @@ def getPlaylistSongs(playlist_id, playlist_name):
         author = playlist['tracks']['data'][i]['artist']['name']
         # print(author)
         searchOnYoutube(title, author, playlist_name)
-        break;
+        # break;
 
 ### ask user playlists (me=5912706)
 def askUserPlaylist(user_id):
@@ -173,7 +173,7 @@ def askUserPlaylist(user_id):
         print("-------------- Getting songs for playlist '" + playlist_name + "' " + str(i+1) + "/" + str(nb_playlists))
         logging.info("-------------- Getting songs for playlist '" + playlist_name + "' " + str(i+1) + "/" + str(nb_playlists))
         getPlaylistSongs(playlist_id, playlist_name)
-        break;
+        # break;
 
 askUserPlaylist(user_id)
 
