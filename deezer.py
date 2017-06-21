@@ -4,6 +4,7 @@ import json
 # import webbrowser
 from bs4 import BeautifulSoup
 import youtube_dl
+from mutagen.easyid3 import EasyID3
 import os
 # import sys
 import logging
@@ -25,9 +26,11 @@ parser.add_option("-v", "--verbose",
 print("account id = " + str(options.account_id))
 print("output dir = " + str(options.output_dir))
 
-user_id = "1"
-# user_id = "5912706"
-dir = "downloads"
+# user_id = "1"
+# (olivier)
+user_id = "5912706"
+# user_id = "1276017244" (delphine commun)
+dir = "download"
 if options.account_id is not None:
     user_id = str(options.account_id)
 if options.output_dir is not None:
@@ -50,8 +53,18 @@ logging.info("Deezer user id is " + user_id)
 def YtdlHook(d):
     if d['status'] == 'finished':
         file_tuple = os.path.split(os.path.abspath(d['filename']))
-        print("Done downloading {}".format(file_tuple[1]))
-        logging.info("Done downloading {}".format(file_tuple[1]))
+        print("Done downloading, now converting ... {}".format(file_tuple[1]))
+        logging.info("Done downloading, now converting ... {}".format(file_tuple[1]))
+
+        # pathToMp3File = os.path.abspath(d['filename'])
+        # print("Update file metadata : " + pathToMp3File)
+        # metatag = EasyID3(pathToMp3File)
+        # metatag['title'] = "Song Title"
+        # metatag['artist'] = "Song Artist"
+        # metatag.RegisterTextKey("track", "TRCK")
+        # metatag['track'] = 7
+        # metatag.save()
+
     if d['status'] == 'downloading':
         print(d['filename'], d['_percent_str'], d['_eta_str'])
 
@@ -67,7 +80,7 @@ class YtdlLogger(object):
         logging.error(msg)
 
 ### download mp3 from youtube url
-def downloadMp3(yt_url, folder):
+def downloadMp3(yt_url, folder, title, author):
     print("*** download mp3 " + yt_url + " for playlist '" + folder + "'")
     logging.info("*** download mp3 " + yt_url + " for playlist " + folder)
     ydl_opts = {
@@ -76,7 +89,12 @@ def downloadMp3(yt_url, folder):
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
+        }, {
+            'key': 'FFmpegMetadata'
         }],
+        'addmetadata': True,
+        'metafromtitle': '%(artist)s - %(title)s',
+        'embedthumbnail' : True,
         'quiet': True,
         'verbose': False,
         'restrictfilenames': True,
@@ -104,7 +122,7 @@ def searchOnYoutube(title, author, folder):
     for vid in soup.findAll(attrs={'class': 'yt-uix-tile-link'}):
         if v == 0:
             yt_url = 'https://www.youtube.com' + vid['href']
-            downloadMp3(yt_url, folder)
+            downloadMp3(yt_url, folder, title, author)
             # webbrowser.open(yt_url, new=new)
         # print('https://www.youtube.com' + vid['href'])
         v = v + 1
@@ -128,6 +146,7 @@ def getPlaylistSongs(playlist_id, playlist_name):
         author = playlist['tracks']['data'][i]['artist']['name']
         # print(author)
         searchOnYoutube(title, author, playlist_name)
+        break;
 
 ### ask user playlists (me=5912706)
 def askUserPlaylist(user_id):
@@ -150,6 +169,7 @@ def askUserPlaylist(user_id):
         print("-------------- Getting songs for playlist '" + playlist_name + "' " + str(i+1) + "/" + str(nb_playlists))
         logging.info("-------------- Getting songs for playlist '" + playlist_name + "' " + str(i+1) + "/" + str(nb_playlists))
         getPlaylistSongs(playlist_id, playlist_name)
+        break;
 
 askUserPlaylist(user_id)
 
