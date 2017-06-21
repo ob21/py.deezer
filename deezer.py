@@ -40,6 +40,7 @@ base_url = "http://api.deezer.com"
 proxy = {"http": "http://p-goodway.rd.francetelecom.fr:3128", "https": "http://p-goodway.rd.francetelecom.fr:3128"}
 session = requests.Session()
 session.trust_env = False
+filename = ""
 
 nb_playlists = 0
 
@@ -53,18 +54,10 @@ logging.info("Deezer user id is " + user_id)
 def YtdlHook(d):
     if d['status'] == 'finished':
         file_tuple = os.path.split(os.path.abspath(d['filename']))
+        global filename
+        filename = os.path.abspath(d['filename']).replace('.webm', '.mp3')
         print("Done downloading, now converting ... {}".format(file_tuple[1]))
         logging.info("Done downloading, now converting ... {}".format(file_tuple[1]))
-
-        # pathToMp3File = os.path.abspath(d['filename'])
-        # print("Update file metadata : " + pathToMp3File)
-        # metatag = EasyID3(pathToMp3File)
-        # metatag['title'] = "Song Title"
-        # metatag['artist'] = "Song Artist"
-        # metatag.RegisterTextKey("track", "TRCK")
-        # metatag['track'] = 7
-        # metatag.save()
-
     if d['status'] == 'downloading':
         print(d['filename'], d['_percent_str'], d['_eta_str'])
 
@@ -94,20 +87,31 @@ def downloadMp3(yt_url, folder, title, author):
         }],
         'addmetadata': True,
         'metafromtitle': '%(artist)s - %(title)s',
-        'embedthumbnail' : True,
+        'embedthumbnail': True,
         'quiet': True,
         'verbose': False,
         'restrictfilenames': True,
         'prefer_ffmpeg': True,
         'ffmpeg_location': 'C:\\ffmpeg',
         'outtmpl': dir+'\\'+folder+'\\%(title)s.%(ext)s',
+        'forcefilename': True,
         'logger': YtdlLogger(),
         'progress_hooks': [YtdlHook],
         'ignoreerrors': True,
     }
 
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([yt_url])
+        infos_dl = ydl.extract_info(yt_url, download=False)
+        result = ydl.download([yt_url])
+    global filename
+    print("Done get = "+filename)
+    print("Update mp3 tags to title = " + title)
+    metatag = EasyID3(filename)
+    metatag['title'] = title
+    metatag['artist'] = author
+    # metatag.RegisterTextKey("track", "TRCK")
+    # metatag['track'] = 7
+    metatag.save()
 
 ### search on youtube
 def searchOnYoutube(title, author, folder):
